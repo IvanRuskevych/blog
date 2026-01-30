@@ -10,5 +10,32 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 0) do
+ActiveRecord::Schema[8.1].define(version: 2026_01_30_153742) do
+  create_table "comments", force: :cascade do |t|
+    t.text "body"
+    t.datetime "created_at", null: false
+    t.integer "post_id", null: false
+    t.datetime "updated_at", null: false
+    t.index ["post_id"], name: "index_comments_on_post_id"
+  end
+
+  create_table "posts", force: :cascade do |t|
+    t.text "body", default: "default body text"
+    t.datetime "created_at", null: false
+    t.string "description", default: "default description text"
+    t.integer "status"
+    t.string "title"
+    t.datetime "updated_at", null: false
+    t.index ["title", "description", "updated_at"], name: "index_posts_on_title_and_description_and_updated_at", order: { updated_at: :desc }, where: "status = 1"
+    t.index ["title"], name: "index_posts_on_title"
+  end
+
+  add_foreign_key "comments", "posts"
+
+  create_view "post_comments", sql_definition: <<-SQL
+      select posts.title, comments.body
+  from posts,
+       comments
+  where posts.id = comments.post_id
+  SQL
 end
