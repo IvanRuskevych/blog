@@ -1,4 +1,25 @@
 Rails.application.routes.draw do
+  # get "home/index"
+  get "/home", to: "home#index"
+
+  root to: "home#index"
+
+  scope :blog do
+    # resources :posts
+
+    # get "/index", to: "posts#index"
+    # get "/show/:post_id", to: "posts#show"
+
+    resources :posts, only: [ :index, :show ] do
+      resources :comments
+      get "search/:query", to: "home#gem", on: :collection
+    end
+  end
+
+  namespace :admin do
+    resources :posts
+  end
+
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
   # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.
